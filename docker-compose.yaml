@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  build:
+    build:
+      # Directory where to find the Docker file
+      context: .
+      dockerfile: Dockerfile
+      # The Multi Stage Build Stage to use
+      ## Using Ubuntu
+      # target: ubuntu-builder
+      ## Using CentOS 6
+      target: centos-6-builder
+    # The Folders to share
+    # entrypoint: ["bash","-c","ls -lArth /;ls -lArth /code"]
+    entrypoint: ["/buildtools/build.sh"]
+    volumes:
+      - ./code:/code:z
+      - ./code:/buildtools:z
+      - ./output:/Output:z
+  
+  # Assuming this is not an Ubuntu system
+  run-ubuntu:
+    user: "${UID}:${GID}"
+    image: ubuntu
+    entrypoint: ["/App/Ubuntu.exe"]
+    volumes:
+      - ./output:/App:z
+
+    # Assuming this is not a CENTOS Family system
+  run-centos-6:
+    build:
+      # Directory where to find the Docker file
+      context: .
+      dockerfile: Dockerfile
+      # The Multi Stage Build Stage to use
+      ## Using Ubuntu
+      target: centos-6-without-eol-issues
+    entrypoint: ["/App/CentOS-6.exe"]
+    volumes:
+      - ./output:/App:z
