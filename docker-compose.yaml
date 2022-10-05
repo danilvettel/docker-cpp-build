@@ -14,8 +14,16 @@ services:
     # entrypoint: ["bash","-c","ls -lArth /;ls -lArth /code"]
     entrypoint: ["/buildtools/build.sh"]
     volumes:
-      - ./code:/code:z
-      - ./code:/buildtools:z
+      # RO indicates that we are mounting as read only
+      # Which in Docker means writing here would lead to an error
+      - ./code:/code:ro
+      # Just because they are at the same source path
+      # Does not mean they both need to be ro
+      - ./code:/buildtools:ro
+      # If not ro, use z which tells Docker that this
+      # mount is writable and it belongs to the host
+      # And is potentially being used for other purposes
+      # Not doing this can lead to errors
       - ./output:/Output:z
   
   # Assuming this is not an Ubuntu system
@@ -24,7 +32,7 @@ services:
     image: ubuntu
     entrypoint: ["/App/Ubuntu.exe"]
     volumes:
-      - ./output:/App:z
+      - ./output:/App:ro
 
     # Assuming this is not a CENTOS Family system
   run-centos-6:
@@ -37,4 +45,4 @@ services:
       target: centos-6-without-eol-issues
     entrypoint: ["/App/CentOS-6.exe"]
     volumes:
-      - ./output:/App:z
+      - ./output:/App:ro
