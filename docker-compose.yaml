@@ -1,6 +1,16 @@
 version: "3.9"
 services:
   build:
+    # Run this compose by ensuring user and group id were set properly
+    # Using
+    #   USER_ID=$(id -u) 
+    #   GROUP_ID=$(id -g)
+    # Before you run this
+    # This ensures that the build runs as our current user
+    # And not as root which is default
+    user: "${USER_ID}:${GROUP_ID}"
+    # Use the following to run as root
+    # user: root
     build:
       # Directory where to find the Docker file
       context: .
@@ -28,7 +38,7 @@ services:
   
   # Assuming this is not an Ubuntu system
   run-ubuntu:
-    user: "${UID}:${GID}"
+    user: "${USER_ID}:${GROUP_ID}"
     image: ubuntu
     entrypoint: ["/App/Ubuntu.exe"]
     volumes:
@@ -36,6 +46,7 @@ services:
 
     # Assuming this is not a CENTOS Family system
   run-centos-6:
+    user: "${USER_ID}:${GROUP_ID}"
     build:
       # Directory where to find the Docker file
       context: .
